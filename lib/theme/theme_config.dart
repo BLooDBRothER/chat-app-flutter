@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MyAppColors {
   static final darkBlue = ColorScheme.fromSeed(
@@ -12,6 +12,7 @@ class MyAppTheme {
   static final kDarkColor = MyAppColors.darkBlue;
 
   static final darkTheme =ThemeData.dark().copyWith(
-        colorScheme: kDarkColor,
-      );
+                            colorScheme: kDarkColor,
+                            textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme)
+                          );
 }

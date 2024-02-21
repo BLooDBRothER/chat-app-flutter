@@ -1,13 +1,16 @@
+import 'package:chat_app_firebase/firebase_options.dart';
 import 'package:chat_app_firebase/screens/authentication.dart';
 import 'package:chat_app_firebase/theme/theme_config.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-var kDarkColorScheme = ColorScheme.fromSeed(
-  brightness: Brightness.dark,
-  seedColor: Color.fromARGB(255, 41, 125, 5),
-);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MyChatApp());
 }
 

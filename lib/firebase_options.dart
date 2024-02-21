@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,7 +28,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,15 +49,6 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyB331gactV_MI5P3egutrzgyzXmu37qPRA',
-    appId: '1:91022489299:web:aca3f357b1d5b9e7490626',
-    messagingSenderId: '91022489299',
-    projectId: 'chat-app-e1bb0',
-    authDomain: 'chat-app-e1bb0.firebaseapp.com',
-    storageBucket: 'chat-app-e1bb0.appspot.com',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDglEKxIe33ewiJHnSm8fHXPADDiYbqC2A',
     appId: '1:91022489299:android:41983e54a83d3636490626',
@@ -66,15 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '91022489299',
     projectId: 'chat-app-e1bb0',
     storageBucket: 'chat-app-e1bb0.appspot.com',
+    iosClientId: '91022489299-s9q543fbr2fvd87m9s8urqd2bdafarfl.apps.googleusercontent.com',
     iosBundleId: 'com.example.chatAppFirebase',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDveoZZDVcKI0bTb50YtlGUFIZjjKkaXdU',
-    appId: '1:91022489299:ios:38417ddee6d1b159490626',
-    messagingSenderId: '91022489299',
-    projectId: 'chat-app-e1bb0',
-    storageBucket: 'chat-app-e1bb0.appspot.com',
-    iosBundleId: 'com.example.chatAppFirebase.RunnerTests',
   );
 }

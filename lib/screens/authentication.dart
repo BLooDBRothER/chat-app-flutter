@@ -1,3 +1,4 @@
+import 'package:chat_app_firebase/widgets/authentication/credential_form.dart';
 import 'package:flutter/material.dart';
 
 class AuthenticationScreen extends StatelessWidget {
@@ -6,7 +7,8 @@ class AuthenticationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chat Me"),), 
-      body: Text("demo"),);
+      appBar: AppBar(title: const Text("Project Chat"),), 
+      body: const CredentialForm()
+    );
   }
 }
