@@ -1,7 +1,8 @@
+import 'package:chat_app_firebase/widgets/loader.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-final _firebase = FirebaseAuth.instance;
+final _firebaseAuth = FirebaseAuth.instance;
 
 class CredentialForm extends StatefulWidget {
   const CredentialForm({super.key});
@@ -15,6 +16,7 @@ class _CredentialFormState extends State<CredentialForm> {
 
   bool _isLogin = true;
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   String _email = "";
   String _password = "";
@@ -31,7 +33,17 @@ class _CredentialFormState extends State<CredentialForm> {
     });
   }
 
+  void _setLoadingState(bool state) {
+    setState(() {
+      _isLoading = state;
+    });
+  }
+
   void _onSubmit() async {
+    if(_isLoading) {
+      return;
+    }
+    _setLoadingState(true);
     final isValid = _form.currentState!.validate();
 
     if(!isValid) {
@@ -40,18 +52,15 @@ class _CredentialFormState extends State<CredentialForm> {
 
     _form.currentState!.save();
 
-    print(_password);
-    print(_email);
 
     try {
       UserCredential userCredential;
       if(_isLogin) {
-        userCredential = await _firebase.signInWithEmailAndPassword(email: _email, password: _password);
+        userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: _email, password: _password);
       }
       else {
-        userCredential = await _firebase.createUserWithEmailAndPassword(email: _email, password: _password);
+        userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: _email, password: _password);
       }
-      print(userCredential);
     }
     on FirebaseAuthException catch(error) {
       String message = "Authentication Failed";
@@ -71,6 +80,9 @@ class _CredentialFormState extends State<CredentialForm> {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
+    }
+    finally {
+      _setLoadingState(false);
     }
 
   }
@@ -136,7 +148,7 @@ class _CredentialFormState extends State<CredentialForm> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.onSecondary
                       ), 
-                      child: Text(_isLogin ? "Login" : "Signup"),
+                      child: _isLoading ? const Loader() : Text(_isLogin ? "Login" : "Signup"),
                     ),
                     // const SizedBox(height: 8,),
                     TextButton(onPressed: toggleFormState, child: Text(_isLogin ? "Don't have an account? signup" : "Already have an account? Login"))
