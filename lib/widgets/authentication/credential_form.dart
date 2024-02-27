@@ -89,75 +89,77 @@ class _CredentialFormState extends State<CredentialForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Image.asset("assets/chat.png", width: 150,),
-          const SizedBox(height: 8,),
-          Card(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Form(
-                key: _form,
-                child: Column(
-                  children: [
-                    Text("Welcome!", style: Theme.of(context).textTheme.titleLarge,),
-                    const SizedBox(height: 8,),
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        label: Text("E-Mail"),
-                        suffixIcon: Icon(Icons.email),
-                        helperText: ""
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset("assets/chat.png", width: 150,),
+            const SizedBox(height: 8,),
+            Card(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Form(
+                  key: _form,
+                  child: Column(
+                    children: [
+                      Text("Welcome!", style: Theme.of(context).textTheme.titleLarge,),
+                      const SizedBox(height: 8,),
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: const InputDecoration(
+                          label: Text("E-Mail"),
+                          suffixIcon: Icon(Icons.email),
+                          helperText: ""
+                        ),
+                        textCapitalization: TextCapitalization.none,
+                        validator: (value) {
+                          if(value == null || value.trim().isEmpty || !value.contains("@")) {
+                            return "Please Enter Valid E-Mail address";
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _email = value!;
+                        },
                       ),
-                      textCapitalization: TextCapitalization.none,
-                      validator: (value) {
-                        if(value == null || value.trim().isEmpty || !value.contains("@")) {
-                          return "Please Enter Valid E-Mail address";
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _email = value!;
-                      },
-                    ),
-                    const SizedBox(height: 8,),
-                    TextFormField(
-                      obscureText: !_isPasswordVisible,
-                      decoration: InputDecoration(
-                        label: const Text("Password"),
-                        suffixIcon: IconButton(onPressed: togglePasswordVisibility, icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility)),
-                        helperText: ""
+                      const SizedBox(height: 8,),
+                      TextFormField(
+                        obscureText: !_isPasswordVisible,
+                        decoration: InputDecoration(
+                          label: const Text("Password"),
+                          suffixIcon: IconButton(onPressed: togglePasswordVisibility, icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility)),
+                          helperText: ""
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().length < 6) {
+                            return 'Password must be at least 6 characters long.';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _password = value!;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().length < 6) {
-                          return 'Password must be at least 6 characters long.';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _password = value!;
-                      },
-                    ),
-                    const SizedBox(height: 8,),
-                    ElevatedButton(
-                      onPressed: _onSubmit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.onSecondary
-                      ), 
-                      child: _isLoading ? const Loader() : Text(_isLogin ? "Login" : "Signup"),
-                    ),
-                    // const SizedBox(height: 8,),
-                    TextButton(onPressed: toggleFormState, child: Text(_isLogin ? "Don't have an account? signup" : "Already have an account? Login"))
-                  ],
-                ),
-              )
+                      const SizedBox(height: 8,),
+                      ElevatedButton(
+                        onPressed: _onSubmit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(context).colorScheme.onSecondary
+                        ), 
+                        child: _isLoading ? const Loader() : Text(_isLogin ? "Login" : "Signup"),
+                      ),
+                      // const SizedBox(height: 8,),
+                      TextButton(onPressed: toggleFormState, child: Text(_isLogin ? "Don't have an account? signup" : "Already have an account? Login"))
+                    ],
+                  ),
+                )
+              ),
             ),
-          ),
-        ]
+          ]
+        ),
       ),
     );
   }
