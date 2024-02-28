@@ -34,7 +34,7 @@ class _Profile extends State<Profile> {
   void _fetchUserDetails() async {
     final userDocument = await _firestore.collection("users").doc(user.uid).get();
     _toggleUploadingLoader(false);
-    if(!userDocument.exists) return;
+    if(!userDocument.exists && userDocument.get("profileImage")) return;
 
     setState(() {
       _uploadedImageUrl = userDocument.get("profileImage");

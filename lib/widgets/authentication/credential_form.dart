@@ -1,4 +1,5 @@
 import 'package:chat_app_firebase/widgets/loader.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +18,10 @@ class _CredentialFormState extends State<CredentialForm> {
   bool _isLogin = true;
   bool _isPasswordVisible = false;
   bool _isLoading = false;
+  bool _isUsernameExist = false;
 
   String _email = "";
+  String _username = "";
   String _password = "";
 
   void togglePasswordVisibility() {
@@ -39,27 +42,48 @@ class _CredentialFormState extends State<CredentialForm> {
     });
   }
 
+  Future<bool> _checkUsername() async {
+    final userDoc = await FirebaseFirestore.instance.collection("users").where("username", isEqualTo: _username).get();
+    if(userDoc.docs.isEmpty) return false;
+
+    setState(() {
+      _isUsernameExist = true;
+    });
+
+    return true;
+  }
+
   void _onSubmit() async {
     if(_isLoading) {
       return;
     }
+
     _setLoadingState(true);
     final isValid = _form.currentState!.validate();
-
-    if(!isValid) {
+    
+    if(!isValid || _isUsernameExist) {
+      _setLoadingState(false);
       return;
     }
-
     _form.currentState!.save();
-
+    final isUsernameExisit = await _checkUsername();  
+    if(isUsernameExisit) {
+      _setLoadingState(false);
+      return;
+    }
 
     try {
       UserCredential userCredential;
       if(_isLogin) {
-        userCredential = await _firebaseAuth.signInWithEmailAndPassword(email: _email, password: _password);
+        await _firebaseAuth.signInWithEmailAndPassword(email: _email, password: _password);
       }
       else {
         userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: _email, password: _password);
+
+        final userData = {
+          "username" : _username
+        };
+        await FirebaseFirestore.instance.collection("users").doc(userCredential.user!.uid).set(userData);
       }
     }
     on FirebaseAuthException catch(error) {
@@ -80,9 +104,6 @@ class _CredentialFormState extends State<CredentialForm> {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
-    }
-    finally {
-      _setLoadingState(false);
     }
 
   }
@@ -107,6 +128,32 @@ class _CredentialFormState extends State<CredentialForm> {
                     children: [
                       Text("Welcome!", style: Theme.of(context).textTheme.titleLarge,),
                       const SizedBox(height: 8,),
+                      if(!_isLogin) 
+                        TextFormField(
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                            label: const Text("Username"),
+                            suffixIcon: const Icon(Icons.person),
+                            helperText: "",
+                            errorText: _isUsernameExist ? "Username Already Exists" : null                        
+                          ),
+                          textCapitalization: TextCapitalization.none,
+                          validator: (value) {
+                            if(value == null || value.trim().isEmpty) {
+                              return "Please Enter Valid username address";
+                            }
+                            return null;
+                          },
+                          onChanged: (value) {
+                            setState(() {
+                              _isUsernameExist = false;
+                            });
+                          },
+                          onSaved: (value) {
+                            _username = value!;
+                          },
+                        ),
+                        const SizedBox(height: 8,),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         decoration: const InputDecoration(
