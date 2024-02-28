@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDveoZZDVcKI0bTb50YtlGUFIZjjKkaXdU',
-    appId: '1:91022489299:ios:472ad9a9df28fe62490626',
+    appId: '1:91022489299:ios:38417ddee6d1b159490626',
     messagingSenderId: '91022489299',
     projectId: 'chat-app-e1bb0',
     storageBucket: 'chat-app-e1bb0.appspot.com',
-    iosClientId: '91022489299-s9q543fbr2fvd87m9s8urqd2bdafarfl.apps.googleusercontent.com',
-    iosBundleId: 'com.example.chatAppFirebase',
+    iosClientId: '91022489299-mimcce81b66egcpdgt8ufllodq1t7g5q.apps.googleusercontent.com',
+    iosBundleId: 'com.example.chatAppFirebase.RunnerTests',
   );
 }
