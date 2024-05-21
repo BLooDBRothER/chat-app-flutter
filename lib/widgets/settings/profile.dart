@@ -2,43 +2,30 @@ import 'dart:io';
 
 import 'package:chat_app_firebase/widgets/image_picker_actions.dart';
 import 'package:chat_app_firebase/widgets/loader.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:chat_app_firebase/providers/user_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
-final _firestore = FirebaseFirestore.instance;
-
-class Profile extends StatefulWidget {
+class Profile extends ConsumerStatefulWidget {
   const Profile({super.key});
 
   @override
-  State<StatefulWidget> createState() {
+  ConsumerState<ConsumerStatefulWidget> createState() {
     return _Profile();
   }
 }
 
-class _Profile extends State<Profile> {
+class _Profile extends ConsumerState<Profile> {
   File? _pickedImage;
-  String? _uploadedImageUrl;
-  bool _isUploading = true;
+  bool _isUploading = false;
   final user = FirebaseAuth.instance.currentUser!;
 
   @override
   void initState() {
-    _fetchUserDetails();
+    ref.read(userProfileProvider).fetchUserDetails();
     super.initState();
-  }
-
-  void _fetchUserDetails() async {
-    final userDocument = await _firestore.collection("users").doc(user.uid).get();
-    _toggleUploadingLoader(false);
-    if(!userDocument.exists && userDocument.get("profileImage")) return;
-
-    setState(() {
-      _uploadedImageUrl = userDocument.get("profileImage");
-    });
   }
 
   void _closeBottomSheet() {
@@ -46,9 +33,11 @@ class _Profile extends State<Profile> {
   }
 
   void _toggleUploadingLoader(bool loadingState) {
-    setState(() {
-      _isUploading = loadingState;
-    });
+    if(mounted) {
+      setState(() {
+        _isUploading = loadingState;
+      });
+    }
   }
 
   void _setImage(XFile? pickedImage) async {
@@ -65,18 +54,8 @@ class _Profile extends State<Profile> {
       _pickedImage = pickedImageFile;
     });
 
-    String imageType = "jpg";
+    await ref.read(userProfileProvider).uploadProfilePic(pickedImageFile);
 
-    final storageRef = FirebaseStorage.instance.ref().child("user_images").child("${user.uid}$imageType");
-    await storageRef.putFile(pickedImageFile);
-    final url = await storageRef.getDownloadURL();
-
-    final userData = {
-      "profileImage": url
-    };
-    
-    await _firestore.collection("users").doc(user.uid).set(userData);
-    
     _toggleUploadingLoader(false);
   }
 
@@ -98,21 +77,24 @@ class _Profile extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
+    final userProfileNotifier = ref.watch(userProfileProvider);
+
     dynamic image;
 
     if(_pickedImage != null) {
       image = FileImage(_pickedImage!);
     }
-    else if(_uploadedImageUrl != null) {
-      image = NetworkImage(_uploadedImageUrl!);
+    else if(userProfileNotifier.isFetched && userProfileNotifier.userProfile!.profileUrl != "") {
+      image = NetworkImage(userProfileNotifier.userProfile!.profileUrl);
     }
 
     return Container(
       alignment: Alignment.center,
       child: Column(
         children: [
+          Text("Welcome ${userProfileNotifier.isFetched ? userProfileNotifier.userProfile!.username : ""} !", style: Theme.of(context).textTheme.titleLarge,),
+          const SizedBox(height: 8,),
           CircleAvatar(
-            // foregroundImage: _pickedImage != null ? FileImage(_pickedImage!) : null,
             foregroundImage: image,
             radius: 60,
           ),
