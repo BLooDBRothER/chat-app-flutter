@@ -6,6 +6,7 @@ import 'package:chat_app_firebase/theme/theme_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +15,11 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyChatApp());
+  runApp(
+    const ProviderScope(
+      child: MyChatApp()
+    )
+  );
 }
 
 class MyChatApp extends StatelessWidget {
