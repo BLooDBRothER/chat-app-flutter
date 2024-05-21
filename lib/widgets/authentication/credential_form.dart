@@ -105,6 +105,9 @@ class _CredentialFormState extends State<CredentialForm> {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     }
+    finally {
+      _setLoadingState(false);
+    }
 
   }
 
