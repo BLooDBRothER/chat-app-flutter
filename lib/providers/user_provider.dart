@@ -32,7 +32,8 @@ class UserProfileNotifier extends ChangeNotifier {
       profileUrl = userDocument.get("profileImage");;
     }
     String username = userDocument.get("username");
-    userProfile = UserProfile(user.uid, username, profileUrl);
+    String email = userDocument.get("eamil");
+    userProfile = UserProfile(user.uid, username, email, profileUrl);
     
     isFetched = true;
 
