@@ -14,15 +14,14 @@ class CredentialForm extends StatefulWidget {
 
 class _CredentialFormState extends State<CredentialForm> {
   final _form = GlobalKey<FormState>();
+  final _usernameTextController = TextEditingController();
+  final _emailTextController = TextEditingController();
+  final _passwordTextController = TextEditingController();
 
   bool _isLogin = true;
   bool _isPasswordVisible = false;
   bool _isLoading = false;
   bool _isUsernameExist = false;
-
-  String _email = "";
-  String _username = "";
-  String _password = "";
 
   void togglePasswordVisibility() {
     setState(() {
@@ -32,6 +31,9 @@ class _CredentialFormState extends State<CredentialForm> {
 
   void toggleFormState() {
     setState(() {
+      _emailTextController.clear();
+      _usernameTextController.clear();
+      _passwordTextController.clear();
       _isLogin = !_isLogin;
     });
   }
@@ -43,7 +45,7 @@ class _CredentialFormState extends State<CredentialForm> {
   }
 
   Future<bool> _checkUsername() async {
-    final userDoc = await FirebaseFirestore.instance.collection("users").where("username", isEqualTo: _username).get();
+    final userDoc = await FirebaseFirestore.instance.collection("users").where("username", isEqualTo: _usernameTextController.text).get();
     if(userDoc.docs.isEmpty) return false;
 
     setState(() {
@@ -75,13 +77,14 @@ class _CredentialFormState extends State<CredentialForm> {
     try {
       UserCredential userCredential;
       if(_isLogin) {
-        await _firebaseAuth.signInWithEmailAndPassword(email: _email, password: _password);
+        await _firebaseAuth.signInWithEmailAndPassword(email: _emailTextController.text, password: _passwordTextController.text);
       }
       else {
-        userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: _email, password: _password);
+        userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: _emailTextController.text, password: _passwordTextController.text);
 
         final userData = {
-          "username" : _username
+          "username" : _usernameTextController.text,
+          "email": _emailTextController.text
         };
         await FirebaseFirestore.instance.collection("users").doc(userCredential.user!.uid).set(userData);
       }
@@ -108,7 +111,12 @@ class _CredentialFormState extends State<CredentialForm> {
     finally {
       _setLoadingState(false);
     }
+  }
 
+  @override
+  void dispose() {
+    _emailTextController.dispose();
+    super.dispose();
   }
 
   @override
@@ -134,6 +142,7 @@ class _CredentialFormState extends State<CredentialForm> {
                       if(!_isLogin) 
                         TextFormField(
                           keyboardType: TextInputType.text,
+                          controller: _usernameTextController,
                           decoration: InputDecoration(
                             label: const Text("Username"),
                             suffixIcon: const Icon(Icons.person),
@@ -152,13 +161,11 @@ class _CredentialFormState extends State<CredentialForm> {
                               _isUsernameExist = false;
                             });
                           },
-                          onSaved: (value) {
-                            _username = value!;
-                          },
                         ),
                         const SizedBox(height: 8,),
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
+                        controller: _emailTextController,
                         decoration: const InputDecoration(
                           label: Text("E-Mail"),
                           suffixIcon: Icon(Icons.email),
@@ -171,13 +178,11 @@ class _CredentialFormState extends State<CredentialForm> {
                           }
                           return null;
                         },
-                        onSaved: (value) {
-                          _email = value!;
-                        },
                       ),
                       const SizedBox(height: 8,),
                       TextFormField(
                         obscureText: !_isPasswordVisible,
+                        controller: _passwordTextController,
                         decoration: InputDecoration(
                           label: const Text("Password"),
                           suffixIcon: IconButton(onPressed: togglePasswordVisibility, icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility)),
@@ -188,10 +193,7 @@ class _CredentialFormState extends State<CredentialForm> {
                             return 'Password must be at least 6 characters long.';
                           }
                           return null;
-                        },
-                        onSaved: (value) {
-                          _password = value!;
-                        },
+                        }
                       ),
                       const SizedBox(height: 8,),
                       ElevatedButton(
