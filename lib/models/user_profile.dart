@@ -4,6 +4,6 @@ class UserProfile {
   String uid;
   String username;
   String email;
-  String profileUrl;
+  String? profileUrl;
   
 }

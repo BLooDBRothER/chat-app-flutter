@@ -14,27 +14,29 @@ class UserProfileNotifier extends ChangeNotifier {
   bool isFetched = false;
 
   Future<void> fetchUserDetails() async {
-    if(isFetched) {
+    if (isFetched) {
       return;
     }
 
     final user = FirebaseAuth.instance.currentUser;
 
-    if(user == null){
-     return;
+    if (user == null) {
+      return;
     }
 
-    final userDocument = await _firestore.collection("users").doc(user.uid).get();
-    if(!userDocument.exists) return;
+    final userDocument =
+        await _firestore.collection("users").doc(user.uid).get();
+    if (!userDocument.exists) return;
 
-    String profileUrl = "";
-    if(userDocument.data() != null && userDocument.data()!.containsKey("profileImage")){
-      profileUrl = userDocument.get("profileImage");;
+    String? profileUrl;
+    if (userDocument.data() != null &&
+        userDocument.data()!.containsKey("profileImage")) {
+      profileUrl = userDocument.get("profileImage");
     }
     String username = userDocument.get("username");
-    String email = userDocument.get("eamil");
+    String email = userDocument.get("email");
     userProfile = UserProfile(user.uid, username, email, profileUrl);
-    
+
     isFetched = true;
 
     notifyListeners();
@@ -43,15 +45,19 @@ class UserProfileNotifier extends ChangeNotifier {
   Future<void> uploadProfilePic(File image) async {
     String imageType = "jpg";
 
-    final storageRef = FirebaseStorage.instance.ref().child("user_images").child("${userProfile!.uid}$imageType");
+    final storageRef = FirebaseStorage.instance
+        .ref()
+        .child("user_images")
+        .child("${userProfile!.uid}$imageType");
     await storageRef.putFile(image);
     final url = await storageRef.getDownloadURL();
 
-    final userData = {
-      "profileImage": url
-    };
-    
-    await _firestore.collection("users").doc(userProfile!.uid).set(userData, SetOptions(merge: true));
+    final userData = {"profileImage": url};
+
+    await _firestore
+        .collection("users")
+        .doc(userProfile!.uid)
+        .set(userData, SetOptions(merge: true));
 
     userProfile!.profileUrl = url;
 
@@ -59,4 +65,5 @@ class UserProfileNotifier extends ChangeNotifier {
   }
 }
 
-final userProfileProvider = ChangeNotifierProvider<UserProfileNotifier>((ref) => UserProfileNotifier());
+final userProfileProvider =
+    ChangeNotifierProvider<UserProfileNotifier>((ref) => UserProfileNotifier());
