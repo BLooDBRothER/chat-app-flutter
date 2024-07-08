@@ -84,19 +84,27 @@ class _Profile extends ConsumerState<Profile> {
     if(_pickedImage != null) {
       image = FileImage(_pickedImage!);
     }
-    else if(userProfileNotifier.isFetched && userProfileNotifier.userProfile!.profileUrl != "") {
-      image = NetworkImage(userProfileNotifier.userProfile!.profileUrl);
+    else if(userProfileNotifier.isFetched && userProfileNotifier.userProfile!.profileUrl != null) {
+      image = NetworkImage(userProfileNotifier.userProfile!.profileUrl ?? "");
     }
 
     return Container(
       alignment: Alignment.center,
       child: Column(
         children: [
-          Text("Welcome ${userProfileNotifier.isFetched ? userProfileNotifier.userProfile!.username : ""} !", style: Theme.of(context).textTheme.titleLarge,),
+          Center(
+            child:
+          Text(
+            "Welcome ${userProfileNotifier.isFetched ? userProfileNotifier.userProfile!.username : ""} !", 
+            style: Theme.of(context).textTheme.titleLarge,
+            textAlign: TextAlign.center,
+          ),
+          ),
           const SizedBox(height: 8,),
           CircleAvatar(
             foregroundImage: image,
             radius: 60,
+            child: const Icon(Icons.person),
           ),
           const SizedBox(height: 8,),
           TextButton.icon(
