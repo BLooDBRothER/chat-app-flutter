@@ -12,7 +12,7 @@ class Profile extends ConsumerStatefulWidget {
   const Profile({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() {
+  ConsumerState<Profile> createState() {
     return _Profile();
   }
 }
@@ -85,7 +85,7 @@ class _Profile extends ConsumerState<Profile> {
       image = FileImage(_pickedImage!);
     }
     else if(userProfileNotifier.isFetched && userProfileNotifier.userProfile!.profileUrl != null) {
-      image = NetworkImage(userProfileNotifier.userProfile!.profileUrl ?? "");
+      image = NetworkImage(userProfileNotifier.userProfile!.profileUrl!);
     }
 
     return Container(
