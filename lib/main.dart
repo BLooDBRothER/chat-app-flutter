@@ -40,9 +40,9 @@ class MyChatApp extends StatelessWidget {
         }
         if(snapshot.hasData) {
           switch(route) {
-            case "/":
+            case ChatScreen.routeName:
               return const ChatScreen();
-            case "/settings":
+            case SettingScreen.routeName:
               return const SettingScreen();
           }
         }
@@ -58,10 +58,11 @@ class MyChatApp extends StatelessWidget {
       darkTheme: MyAppTheme.darkTheme,
       themeMode: ThemeMode.dark,
       routes: {
-        "/": (context) => _buildScreen("/"),
-        "/settings": (context) => _buildScreen("/settings")
+        ChatScreen.routeName: (context) => _buildScreen(ChatScreen.routeName),
+        SettingScreen.routeName: (context) => _buildScreen(SettingScreen.routeName)
       },
-      initialRoute: "/",
+      initialRoute: ChatScreen.routeName,
+
     );
   }
 }

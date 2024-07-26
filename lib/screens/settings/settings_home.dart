@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
 
+  static const routeName = "/settings";
+
   void _navigateProfileScreen(BuildContext context) {
     Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext ctx) => const ProfileScreen()));
   }

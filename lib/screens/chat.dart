@@ -1,31 +1,70 @@
+import 'package:chat_app_firebase/api/notification_api.dart';
 import 'package:chat_app_firebase/data/menu.dart';
+import 'package:chat_app_firebase/providers/chat_screen_provider.dart';
+import 'package:chat_app_firebase/providers/user_provider.dart';
+import 'package:chat_app_firebase/screens/groups/create/create_group.dart';
+import 'package:chat_app_firebase/screens/groups/request/group_requests.dart';
 import 'package:chat_app_firebase/screens/settings/settings_home.dart';
+import 'package:chat_app_firebase/widgets/home/bottom_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ChatScreen extends StatelessWidget {
+class ChatScreen extends ConsumerWidget {
   const ChatScreen({super.key});
 
-  void _handleSignout () {
+  static const routeName = "/";
+
+  void _handleSignout(WidgetRef ref) {
+    ref.read(userProfileProvider).clearUsers();
     FirebaseAuth.instance.signOut();
   }
 
+  void showCreateGroupModal(BuildContext context) {
+    Navigator.of(context).push(
+        MaterialPageRoute(builder: (ctx) => const CreateGroupScreen()));
+  }
+
+  void notificationHandler() async {
+    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
+  }
+
+  Widget _activeScreen(int index) {
+    switch(index) {
+      case 0:
+        return const Padding(
+          padding: EdgeInsets.all(20),
+          child: Text("Chat Home"),
+        );
+      case 1:
+        return const GroupRequests();
+      default:
+        return const Text("Your projects");
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    notificationHandler();
+    ref.read(userProfileProvider).fetchUserDetails();
+    final selectedIndex = ref.watch(chatScreenProvider).chatScreenActiveIndex;
+    final screenTitle = ref.read(chatScreenProvider).chatScreensTitle[selectedIndex];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Project Chat"),
+        title: Text(screenTitle!),
         actions: [
           PopupMenuButton<MenuItems>(
             icon: const Icon(Icons.more_vert),
             position: PopupMenuPosition.under,
             onSelected: (MenuItems item) {
-              switch(item) {
+              switch (item) {
                 case MenuItems.signout:
-                  _handleSignout();
+                  _handleSignout(ref);
                   break;
                 case MenuItems.settings:
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext ctx) => const SettingScreen()));
+                  Navigator.of(context).pushNamed("/settings");
                   break;
               }
             },
@@ -35,7 +74,9 @@ class ChatScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(Icons.settings),
-                    SizedBox(width: 8,),
+                    SizedBox(
+                      width: 8,
+                    ),
                     Text("Settings")
                   ],
                 ),
@@ -45,7 +86,9 @@ class ChatScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(Icons.exit_to_app),
-                    SizedBox(width: 8,),
+                    SizedBox(
+                      width: 8,
+                    ),
                     Text("Signout")
                   ],
                 ),
@@ -53,8 +96,15 @@ class ChatScreen extends StatelessWidget {
             ],
           )
         ],
-      ), 
-      body: Text("demo"),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showCreateGroupModal(context);
+        },
+        child: const Icon(Icons.add),
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar.bottomNavigationBarWidget(selectedIndex, ref.read(chatScreenProvider).switchChatScreen),
+      body: _activeScreen(selectedIndex)
     );
   }
 }
