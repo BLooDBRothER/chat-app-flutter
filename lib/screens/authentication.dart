@@ -7,7 +7,7 @@ class AuthenticationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Project Chat"),), 
+      appBar: AppBar(title: const Text("Group Chat"),),
       body: const CredentialForm()
     );
   }

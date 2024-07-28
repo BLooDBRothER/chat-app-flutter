@@ -30,7 +30,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
 
   final _firestore = FirebaseFirestore.instance;
   final _searchTextController = TextEditingController();
-  final _projectNameTextController = TextEditingController();
+  final _groupNameTextController = TextEditingController();
 
   void showSnackbarError(String error) {
     if (context.mounted) {
@@ -61,8 +61,8 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
       return;
     }
 
-    if (_projectNameTextController.text == "") {
-      showSnackbarError("Please provide Project Chat Name");
+    if (_groupNameTextController.text == "") {
+      showSnackbarError("Please provide Group Chat Name");
       return;
     }
     setState(() {
@@ -75,7 +75,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
     final userProvider = ref.read(userProfileProvider);
 
     final groupData = {
-      "name": _projectNameTextController.text,
+      "name": _groupNameTextController.text,
       "profile_pic": fileUrl,
       "admin": [userProvider.userProfile!.uid],
       "users": [],
@@ -186,7 +186,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
 
   @override
   void dispose() {
-    _projectNameTextController.dispose();
+    _groupNameTextController.dispose();
     _searchTextController.dispose();
     super.dispose();
   }
@@ -195,7 +195,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Create Project Chat!"),
+        title: const Text("Create Group Chat!"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -223,9 +223,9 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
             const SizedBox(height: 8),
             TextFormField(
               keyboardType: TextInputType.text,
-              controller: _projectNameTextController,
+              controller: _groupNameTextController,
               decoration: const InputDecoration(
-                label: Text("Project Name"),
+                label: Text("Group Name"),
               ),
               textCapitalization: TextCapitalization.none,
               validator: (value) {
