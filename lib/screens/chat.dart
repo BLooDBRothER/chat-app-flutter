@@ -1,13 +1,12 @@
-import 'package:chat_app_firebase/api/notification_api.dart';
 import 'package:chat_app_firebase/data/menu.dart';
 import 'package:chat_app_firebase/providers/chat_screen_provider.dart';
 import 'package:chat_app_firebase/providers/user_provider.dart';
 import 'package:chat_app_firebase/screens/groups/create/create_group.dart';
 import 'package:chat_app_firebase/screens/groups/request/group_requests.dart';
-import 'package:chat_app_firebase/screens/settings/settings_home.dart';
+import 'package:chat_app_firebase/service/locator.dart';
+import 'package:chat_app_firebase/service/navigation_service.dart';
 import 'package:chat_app_firebase/widgets/home/bottom_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,10 +25,6 @@ class ChatScreen extends ConsumerWidget {
         MaterialPageRoute(builder: (ctx) => const CreateGroupScreen()));
   }
 
-  void notificationHandler() async {
-    final token = await FirebaseAuth.instance.currentUser?.getIdToken();
-  }
-
   Widget _activeScreen(int index) {
     switch(index) {
       case 0:
@@ -40,13 +35,12 @@ class ChatScreen extends ConsumerWidget {
       case 1:
         return const GroupRequests();
       default:
-        return const Text("Your projects");
+        return const Text("Your Groups");
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    notificationHandler();
     ref.read(userProfileProvider).fetchUserDetails();
     final selectedIndex = ref.watch(chatScreenProvider).chatScreenActiveIndex;
     final screenTitle = ref.read(chatScreenProvider).chatScreensTitle[selectedIndex];
@@ -64,7 +58,7 @@ class ChatScreen extends ConsumerWidget {
                   _handleSignout(ref);
                   break;
                 case MenuItems.settings:
-                  Navigator.of(context).pushNamed("/settings");
+                  locator<NavigationService>().pushTo("/settings");
                   break;
               }
             },
