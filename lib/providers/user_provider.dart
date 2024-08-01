@@ -1,5 +1,8 @@
 import 'dart:io';
+import 'dart:developer';
 
+import 'package:chat_app_firebase/api/firebase_message_api.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chat_app_firebase/models/user_profile.dart';
@@ -37,7 +40,13 @@ class UserProfileNotifier extends ChangeNotifier {
     String email = userDocument.get("email");
     userProfile = UserProfile(user.uid, username, email, profileUrl);
 
+    if(!userDocument.data()!.containsKey("fcmToken") || userDocument.get("fcmToken") != FirebaseMessageApi.fcmToken) {
+      updateUserFcmToken(FirebaseMessageApi.fcmToken!, user.uid);
+    }
+
     isFetched = true;
+
+    initUserTokenUpdate();
 
     notifyListeners();
   }
@@ -62,6 +71,29 @@ class UserProfileNotifier extends ChangeNotifier {
     userProfile!.profileUrl = url;
 
     notifyListeners();
+  }
+
+  void initUserTokenUpdate() {
+    FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+      updateUserFcmToken(fcmToken, userProfile!.uid);
+    }).onError((err) {
+      log("Error on Token Refresh", name: "FCM Token", time: DateTime.timestamp());
+    });
+  }
+
+  Future<void> updateUserFcmToken(String fcmToken, String uid) async {
+    final fcmData = {
+      "fcmToken": fcmToken
+    };
+    await _firestore
+        .collection("users")
+        .doc(uid)
+        .set(fcmData, SetOptions(merge: true));
+  }
+
+  void clearUsers() {
+    isFetched = false;
+    userProfile = null;
   }
 }
 
