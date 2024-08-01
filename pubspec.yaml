@@ -45,6 +45,7 @@ dependencies:
   uuid: ^4.4.0
   firebase_messaging: ^14.7.19
   flutter_local_notifications: ^17.2.1+1
+  get_it: ^7.6.7
 
 dev_dependencies:
   flutter_test:
