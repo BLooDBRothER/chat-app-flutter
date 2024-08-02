@@ -1,11 +1,12 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_app_firebase/models/user_profile_model.dart';
 import 'package:chat_app_firebase/providers/user_provider.dart';
+import 'package:chat_app_firebase/service/group/create_group.dart';
 import 'package:chat_app_firebase/widgets/image_picker_actions.dart';
 import 'package:chat_app_firebase/widgets/loader.dart';
 import 'package:chat_app_firebase/widgets/user_list_item.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +29,6 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
   bool _isSearching = false;
   bool _isSameUser = false;
 
-  final _firestore = FirebaseFirestore.instance;
   final _searchTextController = TextEditingController();
   final _groupNameTextController = TextEditingController();
   final _groupDescriptionTextController = TextEditingController();
@@ -46,15 +46,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
       return null;
     }
 
-    String imageType = "jpg";
-
-    final storageRef = FirebaseStorage.instance
-        .ref()
-        .child("group_chat_images")
-        .child("$uuid$imageType");
-    await storageRef.putFile(_pickedImageFile!);
-    final url = await storageRef.getDownloadURL();
-    return url;
+    return await uploadGroupProfilePic(uuid, _pickedImageFile!);
   }
 
   void _createGroup() async {
@@ -91,7 +83,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
       "updatedAt": Timestamp.now()
     };
 
-    await _firestore.collection("groups").doc(uuid).set(groupData);
+    await createGroup(uuid, groupData);
 
     setState(() {
       _isCreating = false;
@@ -132,24 +124,21 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
       _isSameUser = false;
     });
 
-    final users = await _firestore
-        .collection("users")
-        .where("username", isEqualTo: _searchTextController.text)
-        .get();
-
-    for (final user in users.docs) {
-      String? profileUrl;
-      if (user.data().containsKey("profileImage")) {
-        profileUrl = user.get("profileImage");
-      }
+    try {
+      final user = await searchUser(_searchTextController.text);
       setState(() {
-        searchedUser = UserProfile(
-            user.id, user.get("username"), user.get("email"), profileUrl);
+        searchedUser = user;
       });
     }
-    setState(() {
-      _isSearching = false;
-    });
+    catch(e) {
+      log("Error while searching user ${e.toString()}", name: "Groups", time: DateTime.timestamp());
+    }
+    finally {
+      setState(() {
+        _isSearching = false;
+      });
+    }
+
   }
 
   void _closeBottomSheet() {

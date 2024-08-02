@@ -1,0 +1,3 @@
+enum FirestoreCollections {
+  users, groups
+}
