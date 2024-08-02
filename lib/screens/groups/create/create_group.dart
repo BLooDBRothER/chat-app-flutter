@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chat_app_firebase/models/user_profile.dart';
+import 'package:chat_app_firebase/models/user_profile_model.dart';
 import 'package:chat_app_firebase/providers/user_provider.dart';
 import 'package:chat_app_firebase/widgets/image_picker_actions.dart';
 import 'package:chat_app_firebase/widgets/loader.dart';
@@ -31,6 +31,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
   final _firestore = FirebaseFirestore.instance;
   final _searchTextController = TextEditingController();
   final _groupNameTextController = TextEditingController();
+  final _groupDescriptionTextController = TextEditingController();
 
   void showSnackbarError(String error) {
     if (context.mounted) {
@@ -65,6 +66,10 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
       showSnackbarError("Please provide Group Chat Name");
       return;
     }
+    if(_groupDescriptionTextController.text == "") {
+      showSnackbarError("Please provide Group Description");
+      return;
+    }
     setState(() {
       _isCreating = true;
     });
@@ -76,6 +81,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
 
     final groupData = {
       "name": _groupNameTextController.text,
+      "description": _groupDescriptionTextController.text,
       "profile_pic": fileUrl,
       "admin": [userProvider.userProfile!.uid],
       "users": [],
@@ -187,6 +193,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
   @override
   void dispose() {
     _groupNameTextController.dispose();
+    _groupDescriptionTextController.dispose();
     _searchTextController.dispose();
     super.dispose();
   }
@@ -227,10 +234,23 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
               decoration: const InputDecoration(
                 label: Text("Group Name"),
               ),
-              textCapitalization: TextCapitalization.none,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return "Please Enter Valid username address";
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              keyboardType: TextInputType.text,
+              controller: _groupDescriptionTextController,
+              decoration: const InputDecoration(
+                label: Text("Group Description"),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return "Please Enter Description";
                 }
                 return null;
               },
