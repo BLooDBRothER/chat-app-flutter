@@ -82,13 +82,13 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
     final groupData = {
       "name": _groupNameTextController.text,
       "description": _groupDescriptionTextController.text,
-      "profile_pic": fileUrl,
+      "profileImage": fileUrl,
       "admin": [userProvider.userProfile!.uid],
       "users": [],
-      "pending_request": _addedUser.map((user) => user.uid).toList(),
-      "is_notification_triggered": false,
-      "created_at": Timestamp.now(),
-      "updated_at": Timestamp.now()
+      "pendingRequest": _addedUser.map((user) => user.uid).toList(),
+      "isNotificationTriggered": false,
+      "createdAt": Timestamp.now(),
+      "updatedAt": Timestamp.now()
     };
 
     await _firestore.collection("groups").doc(uuid).set(groupData);
