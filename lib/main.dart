@@ -1,5 +1,5 @@
-import 'package:chat_app_firebase/api/firebase_message_api.dart';
-import 'package:chat_app_firebase/api/notification_api.dart';
+import 'package:chat_app_firebase/service/notification/firebase_message_api.dart';
+import 'package:chat_app_firebase/service/notification/notification_api.dart';
 import 'package:chat_app_firebase/firebase_options.dart';
 import 'package:chat_app_firebase/handler/notification/notification_initializer.dart';
 import 'package:chat_app_firebase/screens/authentication.dart';

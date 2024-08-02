@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:developer';
 
-import 'package:chat_app_firebase/api/firebase_message_api.dart';
+import 'package:chat_app_firebase/service/notification/firebase_message_api.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
