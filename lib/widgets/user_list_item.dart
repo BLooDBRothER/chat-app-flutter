@@ -1,4 +1,4 @@
-import 'package:chat_app_firebase/models/user_profile.dart';
+import 'package:chat_app_firebase/models/user_profile_model.dart';
 import 'package:flutter/material.dart';
 
 class UserListItem extends StatelessWidget {

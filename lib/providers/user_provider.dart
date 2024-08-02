@@ -5,7 +5,7 @@ import 'package:chat_app_firebase/api/firebase_message_api.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:chat_app_firebase/models/user_profile.dart';
+import 'package:chat_app_firebase/models/user_profile_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -30,15 +30,7 @@ class UserProfileNotifier extends ChangeNotifier {
     final userDocument =
         await _firestore.collection("users").doc(user.uid).get();
     if (!userDocument.exists) return;
-
-    String? profileUrl;
-    if (userDocument.data() != null &&
-        userDocument.data()!.containsKey("profileImage")) {
-      profileUrl = userDocument.get("profileImage");
-    }
-    String username = userDocument.get("username");
-    String email = userDocument.get("email");
-    userProfile = UserProfile(user.uid, username, email, profileUrl);
+    userProfile = UserProfile.fromSnapshot(user.uid, userDocument.data()!);
 
     if(!userDocument.data()!.containsKey("fcmToken") || userDocument.get("fcmToken") != FirebaseMessageApi.fcmToken) {
       updateUserFcmToken(FirebaseMessageApi.fcmToken!, user.uid);
