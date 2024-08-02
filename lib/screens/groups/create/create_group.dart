@@ -204,7 +204,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
                   child: CircleAvatar(
                     foregroundImage: _pickedImage,
                     radius: 32,
-                    child: const Icon(Icons.person),
+                    child: const Icon(Icons.groups),
                   ),
                   onTap: () => {
                     showModalBottomSheet(
@@ -270,7 +270,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
             const SizedBox(height: 16),
             Container(
               decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.onSecondary,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: const BorderRadius.all(Radius.circular(8))),
               width: double.infinity,
               child: Padding(
@@ -305,7 +305,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSecondary,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
                     borderRadius: const BorderRadius.all(Radius.circular(8))),
                 width: double.infinity,
                 child: Padding(
