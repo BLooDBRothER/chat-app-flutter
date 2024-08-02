@@ -16,7 +16,7 @@ class UserProfileNotifier extends ChangeNotifier {
   late UserProfile? userProfile;
   bool isFetched = false;
 
-  Future<void> fetchUserDetails() async {
+  Future<void> _fetchUserDetails() async {
     if (isFetched) {
       return;
     }
@@ -63,6 +63,14 @@ class UserProfileNotifier extends ChangeNotifier {
     userProfile!.profileUrl = url;
 
     notifyListeners();
+  }
+
+  Future<UserProfile> getUser() async {
+    if(isFetched) {
+      return userProfile!;
+    }
+    await _fetchUserDetails();
+    return userProfile!;
   }
 
   void initUserTokenUpdate() {

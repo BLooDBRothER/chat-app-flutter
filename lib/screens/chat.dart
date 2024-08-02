@@ -41,7 +41,7 @@ class ChatScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.read(userProfileProvider).fetchUserDetails();
+    ref.read(userProfileProvider).getUser();
     final selectedIndex = ref.watch(chatScreenProvider).chatScreenActiveIndex;
     final screenTitle = ref.read(chatScreenProvider).chatScreensTitle[selectedIndex];
 
