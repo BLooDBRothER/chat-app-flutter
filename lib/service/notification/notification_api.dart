@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:chat_app_firebase/handler/notification/notification_initializer.dart';
+import 'package:chat_app_firebase/service/notification/notification_initializer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 

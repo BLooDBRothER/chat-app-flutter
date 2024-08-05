@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:chat_app_firebase/handler/notification/implementation/create_group.dart';
-import 'package:chat_app_firebase/handler/notification/notification_payload.dart';
+import 'package:chat_app_firebase/models/notification_payload_model.dart';
 import 'package:chat_app_firebase/handler/notification/notification_type.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

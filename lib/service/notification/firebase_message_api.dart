@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:chat_app_firebase/service/notification/notification_api.dart';
-import 'package:chat_app_firebase/handler/notification/notification_initializer.dart';
+import 'package:chat_app_firebase/service/notification/notification_initializer.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class FirebaseMessageApi {
