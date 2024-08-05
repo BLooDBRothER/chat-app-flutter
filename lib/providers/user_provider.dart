@@ -54,7 +54,10 @@ class UserProfileNotifier extends ChangeNotifier {
     await storageRef.putFile(image);
     final url = await storageRef.getDownloadURL();
 
-    final userData = {"profileImage": url};
+    final userData = {
+      "profileImage": url,
+      "updatedAt": FieldValue.serverTimestamp()
+    };
 
     await _firestore
         .collection("users")
@@ -84,7 +87,8 @@ class UserProfileNotifier extends ChangeNotifier {
 
   Future<void> updateUserFcmToken(String fcmToken, String uid) async {
     final fcmData = {
-      "fcmToken": fcmToken
+      "fcmToken": fcmToken,
+      "updatedAt": FieldValue.serverTimestamp()
     };
     await _firestore
         .collection("users")

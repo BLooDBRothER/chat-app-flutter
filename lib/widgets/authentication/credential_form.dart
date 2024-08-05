@@ -84,7 +84,9 @@ class _CredentialFormState extends State<CredentialForm> {
 
         final userData = {
           "username" : _usernameTextController.text,
-          "email": _emailTextController.text
+          "email": _emailTextController.text,
+          "createdAt": FieldValue.serverTimestamp(),
+          "updatedAt": FieldValue.serverTimestamp(),
         };
         await FirebaseFirestore.instance.collection("users").doc(userCredential.user!.uid).set(userData);
       }

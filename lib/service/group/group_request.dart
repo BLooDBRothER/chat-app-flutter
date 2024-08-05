@@ -24,7 +24,7 @@ Future<void> acceptGroup(String groupId, String userId) async {
       .update({
         "pendingRequest": FieldValue.arrayRemove([userId]),
         "users": FieldValue.arrayUnion([userId]),
-        "updatedAt": Timestamp.now()
+        "updatedAt": FieldValue.serverTimestamp()
       });
 }
 Future<void> rejectGroup(String groupId, String userId) async {
@@ -33,6 +33,6 @@ Future<void> rejectGroup(String groupId, String userId) async {
       .doc(groupId)
       .update({
         "pendingRequest": FieldValue.arrayRemove([userId]),
-        "updatedAt": Timestamp.now()
+        "updatedAt": FieldValue.serverTimestamp()
       });
 }

@@ -78,9 +78,8 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
       "admin": [user.uid],
       "users": [],
       "pendingRequest": _addedUser.map((user) => user.uid).toList(),
-      "isNotificationTriggered": false,
-      "createdAt": Timestamp.now(),
-      "updatedAt": Timestamp.now()
+      "createdAt": FieldValue.serverTimestamp(),
+      "updatedAt": FieldValue.serverTimestamp()
     };
 
     await createGroup(uuid, groupData);
