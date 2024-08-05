@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:chat_app_firebase/api/api_base.dart';
 import 'package:chat_app_firebase/error/service_error.dart';
 import 'package:chat_app_firebase/models/firestore_collections.dart';
 import 'package:chat_app_firebase/models/user_profile_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:http/http.dart' as http;
 
 final _firestore = FirebaseFirestore.instance;
 final _firebaseStorage = FirebaseStorage.instance;
@@ -29,6 +31,16 @@ Future<String?> uploadGroupProfilePic(String uuid, File pickedImageFile) async {
   return url;
 }
 
-Future<void> createGroup(String uuid, Map<String, Object?> groupData) async {
-  await _firestore.collection("groups").doc(uuid).set(groupData);
+Future<void> createGroup(String groupId, Map<String, Object?> groupData) async {
+  await _firestore.collection("groups").doc(groupId).set(groupData);
+}
+
+Future<void> sendCreateNotification(String groupId, String token) async {
+  final res = await http.get(
+    Uri.parse("$CREATE_GROUP_NOTIFICATION/$groupId"),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+      'authorization': "Bearer $token"
+    },
+  );
 }

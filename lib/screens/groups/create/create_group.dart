@@ -69,13 +69,13 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
     var uuid = const Uuid().v4();
 
     String? fileUrl = await _uploadGroupProfilePic(uuid);
-    final userProvider = ref.read(userProfileProvider);
+    final user = await ref.read(userProfileProvider).getUser();
 
     final groupData = {
       "name": _groupNameTextController.text,
       "description": _groupDescriptionTextController.text,
       "profileImage": fileUrl,
-      "admin": [userProvider.userProfile!.uid],
+      "admin": [user.uid],
       "users": [],
       "pendingRequest": _addedUser.map((user) => user.uid).toList(),
       "isNotificationTriggered": false,
@@ -84,6 +84,7 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
     };
 
     await createGroup(uuid, groupData);
+    sendCreateNotification(uuid, user.userToken!);
 
     setState(() {
       _isCreating = false;
@@ -313,17 +314,18 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Users Added",
-                        style: Theme.of(context).textTheme.titleMedium,
-                        textAlign: TextAlign.start,
-                      ),
-                      const SizedBox(height: 8),
-                      if (_addedUser.isEmpty) ...[const Text("No user Added")],
                       Flexible(
                         child: SingleChildScrollView(
                           child: Column(
-                            children: _addedUser
+                            children: [
+                              Text(
+                                "Users Added",
+                                style: Theme.of(context).textTheme.titleMedium,
+                                textAlign: TextAlign.start,
+                              ),
+                              const SizedBox(height: 8),
+                              if (_addedUser.isEmpty) const Text("No user Added"),
+                              ..._addedUser
                                 .map((user) => Row(
                                       children: [
                                         UserListItem(user: user),
@@ -337,7 +339,8 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
                                             icon: const Icon(Icons.delete))
                                       ],
                                     ))
-                                .toList(),
+                                .toList()
+                            ],
                           ),
                         ),
                       )
