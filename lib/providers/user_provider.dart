@@ -30,7 +30,8 @@ class UserProfileNotifier extends ChangeNotifier {
     final userDocument =
         await _firestore.collection("users").doc(user.uid).get();
     if (!userDocument.exists) return;
-    userProfile = UserProfile.fromSnapshot(user.uid, userDocument.data()!);
+    String? token = await user.getIdToken();
+    userProfile = UserProfile.fromSnapshot(user.uid, userDocument.data()!, token: token);
 
     if(!userDocument.data()!.containsKey("fcmToken") || userDocument.get("fcmToken") != FirebaseMessageApi.fcmToken) {
       updateUserFcmToken(FirebaseMessageApi.fcmToken!, user.uid);
