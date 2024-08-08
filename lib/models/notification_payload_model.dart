@@ -12,4 +12,8 @@ class NotificationPayload<T> {
 
     return NotificationPayload(NotificationType.values.byName(type), msgData);
   }
+
+  factory NotificationPayload.fromDynamic(NotificationType type, T msgData) {
+    return NotificationPayload<T>(type, msgData);
+  }
 }

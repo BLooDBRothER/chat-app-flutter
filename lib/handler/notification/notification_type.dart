@@ -1,3 +1,3 @@
 enum NotificationType {
-  GROUP_CREATE
+  GROUP_CREATE, USER_GROUP_ACCEPT
 }

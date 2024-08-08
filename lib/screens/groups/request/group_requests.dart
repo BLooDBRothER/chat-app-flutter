@@ -42,7 +42,7 @@ class _GroupRequests extends ConsumerState<GroupRequests> {
     });
 
     isAccepted ?
-    await acceptGroup(group.id, user.uid) :
+    await acceptGroup(group.id, user.uid, user.userToken!) :
     await rejectGroup(group.id, user.uid);
 
     await _fetchGroupRequests(triggerLoading: false);

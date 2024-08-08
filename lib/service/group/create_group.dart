@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:chat_app_firebase/api/api_base.dart';
@@ -36,11 +37,12 @@ Future<void> createGroup(String groupId, Map<String, Object?> groupData) async {
 }
 
 Future<void> sendCreateNotification(String groupId, String token) async {
-  final res = await http.get(
+  final res = await http.post(
     Uri.parse("$CREATE_GROUP_NOTIFICATION/$groupId"),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
       'authorization': "Bearer $token"
     },
   );
+  log("Create Group Notification Trigger Status - ${res.statusCode}", name: "Notification", time: DateTime.timestamp());
 }
