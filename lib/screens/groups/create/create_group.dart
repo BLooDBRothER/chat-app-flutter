@@ -16,6 +16,8 @@ import 'package:uuid/uuid.dart';
 class CreateGroupScreen extends ConsumerStatefulWidget {
   const CreateGroupScreen({super.key});
 
+  static String routeName = "/create-group";
+
   @override
   ConsumerState<CreateGroupScreen> createState() => _CreateGroupScreen();
 }

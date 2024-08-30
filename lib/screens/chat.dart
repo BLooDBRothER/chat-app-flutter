@@ -18,11 +18,6 @@ class ChatScreen extends ConsumerWidget {
     FirebaseAuth.instance.signOut();
   }
 
-  void showCreateGroupModal(BuildContext context) {
-    Navigator.of(context).push(
-        MaterialPageRoute(builder: (ctx) => const CreateGroupScreen()));
-  }
-
   Widget _activeScreen(int index) {
     switch(index) {
       case 0:
@@ -90,7 +85,7 @@ class ChatScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showCreateGroupModal(context);
+          locator<NavigationService>().pushTo(CreateGroupScreen.routeName);
         },
         child: const Icon(Icons.add),
       ),
