@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 class AuthenticationScreen extends StatelessWidget {
   const AuthenticationScreen({super.key});
 
+  static const routeName = "/login";
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
