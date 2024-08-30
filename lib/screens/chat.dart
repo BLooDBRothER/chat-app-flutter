@@ -1,6 +1,5 @@
 import 'package:chat_app_firebase/data/menu.dart';
 import 'package:chat_app_firebase/providers/chat_screen_provider.dart';
-import 'package:chat_app_firebase/providers/user_provider.dart';
 import 'package:chat_app_firebase/screens/groups/create/create_group.dart';
 import 'package:chat_app_firebase/screens/groups/request/group_requests.dart';
 import 'package:chat_app_firebase/service/locator.dart';
@@ -16,7 +15,6 @@ class ChatScreen extends ConsumerWidget {
   static const routeName = "/";
 
   void _handleSignout(WidgetRef ref) {
-    ref.read(userProfileProvider).clearUsers();
     FirebaseAuth.instance.signOut();
   }
 
@@ -41,7 +39,6 @@ class ChatScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.read(userProfileProvider).getUser();
     final selectedIndex = ref.watch(chatScreenProvider).chatScreenActiveIndex;
     final screenTitle = ref.read(chatScreenProvider).chatScreensTitle[selectedIndex];
 

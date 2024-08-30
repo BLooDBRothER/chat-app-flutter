@@ -27,7 +27,7 @@ class _GroupRequests extends ConsumerState<GroupRequests> {
         isLoading = true;
       });
     }
-    user = await ref.read(userProfileProvider).getUser();
+    user = ref.read(userProfileProvider).getUser();
     final groups = await fetchGroupRequests(user.uid);
 
     setState(() {

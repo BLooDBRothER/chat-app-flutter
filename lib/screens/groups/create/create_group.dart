@@ -107,11 +107,11 @@ class _CreateGroupScreen extends ConsumerState<CreateGroupScreen> {
   }
 
   void _searchUser() async {
-    final userProvider = ref.read(userProfileProvider);
-    if (_isCreating || _isSearching || !userProvider.isFetched) {
+    final userProfile = ref.read(userProfileProvider).getUser();
+    if (_isCreating || _isSearching) {
       return;
     }
-    if (userProvider.userProfile!.username == _searchTextController.text ||
+    if (userProfile.username == _searchTextController.text ||
         _addedUser.any((user) => user.username == _searchTextController.text)) {
       setState(() {
         _isSameUser = true;

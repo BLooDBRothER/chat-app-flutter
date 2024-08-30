@@ -14,7 +14,7 @@ class FirebaseMessageApi {
     if(_isNotificationListenerEnabled) {
       return;
     }
-    _isNotificationListenerEnabled =true;
+    _isNotificationListenerEnabled = true;
 
     await _firebaseMessaging.requestPermission(
       alert: true,

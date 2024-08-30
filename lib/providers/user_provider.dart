@@ -13,10 +13,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 final _firestore = FirebaseFirestore.instance;
 
 class UserProfileNotifier extends ChangeNotifier {
-  late UserProfile? userProfile;
+  late UserProfile? _userProfile;
   bool isFetched = false;
 
-  Future<void> _fetchUserDetails() async {
+  Future<void> fetchUserDetails() async {
     if (isFetched) {
       return;
     }
@@ -31,7 +31,7 @@ class UserProfileNotifier extends ChangeNotifier {
         await _firestore.collection("users").doc(user.uid).get();
     if (!userDocument.exists) return;
     String? token = await user.getIdToken();
-    userProfile = UserProfile.fromSnapshot(user.uid, userDocument.data()!, token: token);
+    _userProfile = UserProfile.fromSnapshot(user.uid, userDocument.data()!, token: token);
 
     if(!userDocument.data()!.containsKey("fcmToken") || userDocument.get("fcmToken") != FirebaseMessageApi.fcmToken) {
       updateUserFcmToken(FirebaseMessageApi.fcmToken!, user.uid);
@@ -50,7 +50,7 @@ class UserProfileNotifier extends ChangeNotifier {
     final storageRef = FirebaseStorage.instance
         .ref()
         .child("user_images")
-        .child("${userProfile!.uid}$imageType");
+        .child("${_userProfile!.uid}$imageType");
     await storageRef.putFile(image);
     final url = await storageRef.getDownloadURL();
 
@@ -61,25 +61,17 @@ class UserProfileNotifier extends ChangeNotifier {
 
     await _firestore
         .collection("users")
-        .doc(userProfile!.uid)
+        .doc(_userProfile!.uid)
         .set(userData, SetOptions(merge: true));
 
-    userProfile!.profileUrl = url;
+    _userProfile!.profileUrl = url;
 
     notifyListeners();
   }
 
-  Future<UserProfile> getUser() async {
-    if(isFetched) {
-      return userProfile!;
-    }
-    await _fetchUserDetails();
-    return userProfile!;
-  }
-
   void initUserTokenUpdate() {
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      updateUserFcmToken(fcmToken, userProfile!.uid);
+      updateUserFcmToken(fcmToken, _userProfile!.uid);
     }).onError((err) {
       log("Error on Token Refresh", name: "FCM Token", time: DateTime.timestamp());
     });
@@ -98,7 +90,11 @@ class UserProfileNotifier extends ChangeNotifier {
 
   void clearUsers() {
     isFetched = false;
-    userProfile = null;
+    _userProfile = null;
+  }
+
+  UserProfile getUser() {
+    return _userProfile!;
   }
 }
 

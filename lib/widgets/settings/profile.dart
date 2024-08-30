@@ -24,7 +24,6 @@ class _Profile extends ConsumerState<Profile> {
 
   @override
   void initState() {
-    ref.read(userProfileProvider).getUser();
     super.initState();
   }
 
@@ -77,15 +76,15 @@ class _Profile extends ConsumerState<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    final userProfileNotifier = ref.watch(userProfileProvider);
+    final userProfile = ref.watch(userProfileProvider).getUser();
 
     dynamic image;
 
     if(_pickedImage != null) {
       image = FileImage(_pickedImage!);
     }
-    else if(userProfileNotifier.isFetched && userProfileNotifier.userProfile!.profileUrl != null) {
-      image = NetworkImage(userProfileNotifier.userProfile!.profileUrl!);
+    else if(userProfile.profileUrl != null) {
+      image = NetworkImage(userProfile.profileUrl!);
     }
 
     return Container(
@@ -95,7 +94,7 @@ class _Profile extends ConsumerState<Profile> {
           Center(
             child:
           Text(
-            "Welcome ${userProfileNotifier.isFetched ? userProfileNotifier.userProfile!.username : ""} !", 
+            "Welcome ${userProfile.username} !",
             style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
