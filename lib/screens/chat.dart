@@ -1,5 +1,5 @@
 import 'package:chat_app_firebase/data/menu.dart';
-import 'package:chat_app_firebase/providers/chat_screen_provider.dart';
+import 'package:chat_app_firebase/models/screen_arguments.dart';
 import 'package:chat_app_firebase/screens/groups/create/create_group.dart';
 import 'package:chat_app_firebase/screens/groups/request/group_requests.dart';
 import 'package:chat_app_firebase/service/locator.dart';
@@ -13,33 +13,17 @@ class ChatScreen extends ConsumerWidget {
   const ChatScreen({super.key});
 
   static const routeName = "/";
+  static const screenTitle = "Your Groups";
 
   void _handleSignout(WidgetRef ref) {
     FirebaseAuth.instance.signOut();
   }
 
-  Widget _activeScreen(int index) {
-    switch(index) {
-      case 0:
-        return const Padding(
-          padding: EdgeInsets.all(20),
-          child: Text("Chat Home"),
-        );
-      case 1:
-        return const GroupRequests();
-      default:
-        return const Text("Your Groups");
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = ref.watch(chatScreenProvider).chatScreenActiveIndex;
-    final screenTitle = ref.read(chatScreenProvider).chatScreensTitle[selectedIndex];
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(screenTitle!),
+        title: const Text(screenTitle),
         actions: [
           PopupMenuButton<MenuItems>(
             icon: const Icon(Icons.more_vert),
@@ -89,8 +73,15 @@ class ChatScreen extends ConsumerWidget {
         },
         child: const Icon(Icons.add),
       ),
-      bottomNavigationBar: CustomBottomNavigationBar.bottomNavigationBarWidget(selectedIndex, ref.read(chatScreenProvider).switchChatScreen),
-      body: _activeScreen(selectedIndex)
+      bottomNavigationBar: bottomNavigationBarWidget(0, () =>
+      {
+        locator<NavigationService>().pushAndReplaceTo(
+            GroupRequests.routeName, arguments: const ScreenArguments(navigateWithoutAnimation: true))
+      }),
+      body: const Padding(
+        padding: EdgeInsets.all(20),
+        child: Text("Chat Home"),
+      )
     );
   }
 }
