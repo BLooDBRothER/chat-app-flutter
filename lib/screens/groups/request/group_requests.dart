@@ -2,18 +2,17 @@ import 'package:chat_app_firebase/models/group_model.dart';
 import 'package:chat_app_firebase/models/screen_arguments.dart';
 import 'package:chat_app_firebase/models/user_profile_model.dart';
 import 'package:chat_app_firebase/providers/user_provider.dart';
+import 'package:chat_app_firebase/screens/chat.dart';
 import 'package:chat_app_firebase/service/group/group_request.dart';
-import 'package:chat_app_firebase/widgets/groups/group_request_list_item.dart';
-import 'package:chat_app_firebase/widgets/home/bottom_navigation_bar.dart';
-import 'package:chat_app_firebase/widgets/loader.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:chat_app_firebase/data/menu.dart';
-import 'package:chat_app_firebase/screens/groups/create/create_group.dart';
 import 'package:chat_app_firebase/service/locator.dart';
 import 'package:chat_app_firebase/service/navigation_service.dart';
+import 'package:chat_app_firebase/widgets/groups/group_request_list_item.dart';
+import 'package:chat_app_firebase/widgets/home/bottom_navigation_bar.dart';
+import 'package:chat_app_firebase/widgets/home/create_group_float_button.dart';
+import 'package:chat_app_firebase/widgets/home/popup_menu.dart';
+import 'package:chat_app_firebase/widgets/loader.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class GroupRequests extends ConsumerStatefulWidget {
   const GroupRequests({super.key});
@@ -25,9 +24,9 @@ class GroupRequests extends ConsumerStatefulWidget {
 }
 
 class _GroupRequests extends ConsumerState<GroupRequests> {
-  static const screenTitle = "Group Requests";
+  static const _screenTitle = "Group Requests";
 
-  List<GroupRequestModel> groupRequests = [];
+  List<GroupRequestModel> _groupRequests = [];
   bool isLoading = false;
   Map<String, bool> loadingGroups = {};
 
@@ -43,7 +42,7 @@ class _GroupRequests extends ConsumerState<GroupRequests> {
     final groups = await fetchGroupRequests(user.uid);
 
     setState(() {
-      groupRequests = groups;
+      _groupRequests = groups;
       isLoading = false;
     });
   }
@@ -83,7 +82,7 @@ class _GroupRequests extends ConsumerState<GroupRequests> {
           )
         ],
       );
-    } else if (groupRequests.isEmpty) {
+    } else if (_groupRequests.isEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -102,11 +101,11 @@ class _GroupRequests extends ConsumerState<GroupRequests> {
     }
     return ListView.separated(
       padding: const EdgeInsets.all(8),
-      itemCount: groupRequests.length,
+      itemCount: _groupRequests.length,
       itemBuilder: (_, index) =>
           (GroupRequestListItem(
-            groupData: groupRequests[index],
-            isLoading: loadingGroups.containsKey(groupRequests[index].id),
+            groupData: _groupRequests[index],
+            isLoading: loadingGroups.containsKey(_groupRequests[index].id),
             respondActions: _respondRequest,
           )),
       separatorBuilder: (_, index) => (const SizedBox(
@@ -128,69 +127,21 @@ class _GroupRequests extends ConsumerState<GroupRequests> {
     }
   }
 
-  void _handleSignout(WidgetRef ref) {
-    FirebaseAuth.instance.signOut();
-  }
-
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text(screenTitle),
+          title: const Text(_screenTitle),
           actions: [
-            PopupMenuButton<MenuItems>(
-              icon: const Icon(Icons.more_vert),
-              position: PopupMenuPosition.under,
-              onSelected: (MenuItems item) {
-                switch (item) {
-                  case MenuItems.signout:
-                    _handleSignout(ref);
-                    break;
-                  case MenuItems.settings:
-                    locator<NavigationService>().pushTo("/settings");
-                    break;
-                }
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<MenuItems>>[
-                const PopupMenuItem(
-                  value: MenuItems.settings,
-                  child: Row(
-                    children: [
-                      Icon(Icons.settings),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text("Settings")
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: MenuItems.signout,
-                  child: Row(
-                    children: [
-                      Icon(Icons.exit_to_app),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text("Signout")
-                    ],
-                  ),
-                )
-              ],
-            )
+            homePopupMenu()
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            locator<NavigationService>().pushTo(CreateGroupScreen.routeName);
-          },
-          child: const Icon(Icons.add),
-        ),
+        floatingActionButton: createGroupFloatButton(),
         bottomNavigationBar: bottomNavigationBarWidget(1, () =>
         {
           locator<NavigationService>().pushAndReplaceTo(
-              GroupRequests.routeName, arguments: const ScreenArguments(navigateWithoutAnimation: true))
+              ChatScreen.routeName, arguments: const ScreenArguments(navigateWithoutAnimation: true))
         }),
         body: renderWidget()
     );

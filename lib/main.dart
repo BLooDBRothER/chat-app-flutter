@@ -58,13 +58,17 @@ class _MyChatApp extends ConsumerState<MyChatApp> {
       title: 'FlutterChat',
       darkTheme: MyAppTheme.darkTheme,
       themeMode: ThemeMode.dark,
-      routes: {
-        SplashScreen.routeName: (context) => const SplashScreen(),
-      },
 
       initialRoute: SplashScreen.routeName,
       onGenerateRoute: (settings) {
-        final args = settings.arguments as ScreenArguments;
+
+        final args = settings.arguments == null
+            ? const ScreenArguments(navigateWithoutAnimation: false)
+            : settings.arguments as ScreenArguments;
+
+        if(settings.name == SplashScreen.routeName) {
+          return MaterialPageRoute(builder: (context) => const SplashScreen());
+        }
 
         if(settings.name == AuthenticationScreen.routeName) {
           return  MaterialPageRoute(builder: (context) => const AuthenticationScreen());
