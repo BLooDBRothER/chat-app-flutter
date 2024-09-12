@@ -1,50 +1,41 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:chat_app_firebase/handler/notification/implementation/accept_group_invite.dart';
 import 'package:chat_app_firebase/handler/notification/implementation/create_group.dart';
-import 'package:chat_app_firebase/models/notification_payload_model.dart';
 import 'package:chat_app_firebase/handler/notification/notification_type.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NotificationInitializer {
-  static WidgetRef? ref;
 
   static triggerNotification(RemoteMessage remoteMessage) {
-    final payload = NotificationPayload.fromJson(
-        jsonDecode(remoteMessage.data.entries.elementAt(0).value));
+    print("inside trig Not");
+    final payload = jsonDecode(remoteMessage.data.entries.elementAt(0).value);
     _triggerOnClick(payload);
   }
 
   static triggerNotificationFromPayload(String messagePayload) {
+    print("inside trig Not payload");
     final fullPayload = json.decode(messagePayload);
 
-    final payload =
-        NotificationPayload.fromJson(jsonDecode(fullPayload["payload"]));
+    final payload =jsonDecode(fullPayload["payload"]);
     _triggerOnClick(payload);
   }
 
-  static void _triggerOnClick(NotificationPayload<dynamic> payload) {
-    if (ref == null) {
-      log("No ref", name: "Notification", time: DateTime.timestamp());
-      return;
-    }
-
+  static void _triggerOnClick(Map<String, dynamic> payload) {
     try {
-      switch (payload.type) {
+      print("on click");
+      print(payload['type']);
+      NotificationType type = NotificationType.values.byName(payload['type']);
+      print(type);
+      switch (type) {
         case NotificationType.GROUP_CREATE:
-          CreateGroupNotificationHandler(ref: ref!)
+          CreateGroupNotificationHandler()
               .triggerNotificationOnClick();
           break;
         case NotificationType.USER_GROUP_ACCEPT:
-          AcceptGroupInviteNotificationHandler(ref: ref!)
-              .triggerNotificationOnClick(
-                  payload: NotificationPayload<
-                          AcceptGroupInviteNotificationMsgData>.fromDynamic(
-                      payload.type,
-                      AcceptGroupInviteNotificationMsgData.fromDynamic(
-                          payload.msgData)));
+          AcceptGroupInviteNotificationMsgData notificationPayload = AcceptGroupInviteNotificationMsgData.fromJson(payload['msgData']);
+          AcceptGroupInviteNotificationHandler()
+              .triggerNotificationOnClick(payload: notificationPayload);
       }
     } catch (error) {
       print(error.toString());
