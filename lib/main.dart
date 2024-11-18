@@ -26,9 +26,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await FirebaseMessageApi().initNotification();
-  await NotificationApi.init();
-
   runApp(
     const ProviderScope(
       child: MyChatApp()

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:developer';
 
 import 'package:chat_app_firebase/service/notification/firebase_message_api.dart';
+import 'package:chat_app_firebase/service/notification/notification_api.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,6 +41,8 @@ class UserProfileNotifier extends ChangeNotifier {
     isFetched = true;
 
     initUserTokenUpdate();
+
+    _initNotification();
 
     notifyListeners();
   }
@@ -86,6 +89,11 @@ class UserProfileNotifier extends ChangeNotifier {
         .collection("users")
         .doc(uid)
         .set(fcmData, SetOptions(merge: true));
+  }
+
+  void _initNotification() async {
+    await FirebaseMessageApi().initNotification();
+    await NotificationApi.init();
   }
 
   void clearUsers() {

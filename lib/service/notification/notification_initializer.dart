@@ -23,10 +23,7 @@ class NotificationInitializer {
 
   static void _triggerOnClick(Map<String, dynamic> payload) {
     try {
-      print("on click");
-      print(payload['type']);
       NotificationType type = NotificationType.values.byName(payload['type']);
-      print(type);
       switch (type) {
         case NotificationType.GROUP_CREATE:
           CreateGroupNotificationHandler()

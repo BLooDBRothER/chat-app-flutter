@@ -47,6 +47,7 @@ dependencies:
   flutter_local_notifications: ^17.2.1+1
   get_it: ^7.6.7
   http: ^1.2.0
+  google_sign_in: ^6.2.1
 
 dev_dependencies:
   flutter_test:

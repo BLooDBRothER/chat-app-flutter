@@ -48,6 +48,7 @@ class FirebaseMessageApi {
 
       await NotificationApi.pushNotification(event);
     });
+    loadInitialMessage();
   }
 
   void setupInteractedMessage() {
@@ -61,6 +62,7 @@ class FirebaseMessageApi {
   }
 
   static loadInitialMessage() {
+    log("Fetching Notification On App Open", name: "Notification", time: DateTime.timestamp());
     if(_isInitialMessageLoaded) {
       return;
     }
